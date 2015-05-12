@@ -7,8 +7,10 @@
 volatile int task_sample_counter = 0;
 volatile int task_led_red = 0;
 volatile int task_led_grn = 0;
-volatile unsigned int bmp_temp = 0;
-volatile unsigned long bmp_press = 0;
+volatile long bmp_temp_raw = 0;
+volatile long bmp_press_raw = 0;
+volatile long bmp_temp = 0;
+volatile long bmp_press = 0;
 int task_sample_imu()
 {
 	mpudata_t mpu; //struct to read IMU data into
@@ -32,9 +34,13 @@ int task_sample_imu()
 		mpu.calibratedAccel[VEC3_Y], 
 		mpu.calibratedAccel[VEC3_Z]);
 		
-		bmp_temp = bmp_read_temp();
-		bmp_press = bmp_read_press();
-		printf("TEMP: %u PRESS: %lu",bmp_temp,bmp_press);
+		bmp_temp_raw = bmp_read_temp();
+		bmp_press_raw = bmp_read_press();
+		printf("TEMP raw: %li PRESS raw: %li",bmp_temp_raw,bmp_press_raw);
+		bmp_temp = bmp_calc_temp(bmp_temp_raw);
+		bmp_press = bmp_calc_press(bmp_press_raw);
+		printf("TEMP 0.1C: %li PRESS PA: %li",bmp_temp,bmp_press);
+		
 		
 		fflush(stdout);
 		
@@ -53,6 +59,8 @@ int task_sample_imu()
 		log_buffer.yg =  mpu.rawGyro[VEC3_Y];
 		log_buffer.zg	=  mpu.rawGyro[VEC3_Z];
 		
+		log_buffer.temperature_raw = bmp_temp_raw;
+		log_buffer.pressure_raw = bmp_press_raw;
 		log_buffer.temperature = bmp_temp;
 		log_buffer.pressure = bmp_press;
 		

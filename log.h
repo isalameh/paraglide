@@ -12,8 +12,10 @@
 	X(float,  "%f", xg      ) \
 	X(float,  "%f", yg      ) \
 	X(float,  "%f", zg      ) \
-	X(unsigned int, "%u", temperature)\
-	X(unsigned long, "%lu", pressure)
+	X(long, "%li", temperature_raw)\
+	X(long, "%li", pressure_raw)\
+	X(long, "%li", temperature)\
+	X(long, "%li", pressure)
 
 #define LOG_TABLE_RADIO \
     X(unsigned long, "%lu", time)\

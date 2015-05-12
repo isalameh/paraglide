@@ -7,6 +7,8 @@
 #define BMP_DEVICE_ID	(0x55)
 #define BMP_RESET		(0xB6)
 
+#define BMP_CALIB_DATA_SIZE			(22)
+
 #define BMP_TEMP_CONVERSION_TIME	(5)
 #define BMP_2MS_DELAY_U8X			(2)
 #define BMP_3MS_DELAY_U8X			(3)
@@ -67,12 +69,30 @@ typedef union{
 	unsigned short all;
 }BMPCtl;
 
+typedef struct{
+	short 			ac1;
+	short 			ac2;
+	short 			ac3;
+	unsigned short 	ac4;
+	unsigned short 	ac5;
+	unsigned short 	ac6;
+	short 			b1;
+	short 			b2;
+	short 			mb;
+	short 			mc;
+	short 			md;
+	int				b5;
+}BMPCalib;
+
 unsigned char bmp_get_id();
 unsigned char bmp_get_ver();
 BMPCtl bmp_get_ctl_reg();
 void bmp_reset();
+BMPCalib bmp_get_calib();
 int bmp_init();
-unsigned int bmp_read_temp();
+long bmp_read_temp();
+long bmp_read_press();
 
-unsigned long bmp_read_press();
+long bmp_calc_temp(long data);
+long bmp_calc_press(long data);
 #endif /*BMP180_H*/

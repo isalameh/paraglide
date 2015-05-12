@@ -26,6 +26,7 @@ int main()
 		return -1;
 	}
 	
+	
 	// printf("\nInitializing GPS\n");
 	// if(ubloxlea6_init(1)<0)
 	// {
