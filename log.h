@@ -17,17 +17,31 @@
 	X(long, "%li", temperature)\
 	X(long, "%li", pressure)
 
+// #define LOG_TABLE_RADIO \
+    // X(unsigned long, "%lu", time)\
+    // X(int,  "%d", Thr	) \
+	// X(int,  "%d", Roll	) \
+	// X(int,  "%d", Pitch	) \
+	// X(int,  "%d", Yaw	) \
+	// X(int,  "%d", Kill	) \
+	// X(int,  "%d", Mode	) \
+	// X(int,  "%d", Aux1	) \
+	// X(int,  "%d", Aux2	) \
+	// X(int,  "%d", Aux3	) 
+	
+	
 #define LOG_TABLE_RADIO \
     X(unsigned long, "%lu", time)\
-    X(int,  "%d", Thr	) \
-	X(int,  "%d", Roll	) \
-	X(int,  "%d", Pitch	) \
-	X(int,  "%d", Yaw	) \
-	X(int,  "%d", Kill	) \
-	X(int,  "%d", Mode	) \
-	X(int,  "%d", Aux1	) \
-	X(int,  "%d", Aux2	) \
-	X(int,  "%d", Aux3	) 
+    X(float,  "%0.2f", Thr	) \
+	X(float,  "%0.2f", Roll	) \
+	X(float,  "%0.2f", Pitch	) \
+	X(float,  "%0.2f", Yaw	) \
+	X(float,  "%0.2f", Kill	) \
+	X(float,  "%0.2f", Mode	) \
+	X(float,  "%0.2f", Aux1	) \
+	X(float,  "%0.2f", Aux2	) \
+	X(float,  "%0.2f", Aux3	) 
+	
 	
 	
 #define X(type, fmt, name) type name ;

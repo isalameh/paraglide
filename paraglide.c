@@ -3,7 +3,7 @@
 #include "log.h"
 #include "task.h"
 #include "bmp180.h"
-#include "ubloxlea6.h"
+#include "em506.h"
 
 int main()
 {
@@ -27,13 +27,13 @@ int main()
 	}
 	
 	
-	// printf("\nInitializing GPS\n");
-	// if(ubloxlea6_init(1)<0)
-	// {
-		// printf("GPS initialization failed!\n");
-		// cleanup_cape();
-		// return -1;
-	// }
+	printf("\nInitializing GPS\n");
+	if(em506_init(2)<0)
+	{
+		printf("GPS initialization failed!\n");
+		cleanup_cape();
+		return -1;
+	}
 
 	if(initialize_dsm2()){
 		// if init returns -1 if there was a problem 
@@ -59,7 +59,7 @@ int main()
 	while(get_state()!=EXITING)
 	{
 		usleep(100000);
-		
+		em506_read();
 	}
 	
 	/////////// Exit//////////////////////////////
