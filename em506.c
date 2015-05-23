@@ -7,6 +7,8 @@
 #include <termios.h> /* POSIX terminal control definitions */
 
 int fd;
+fd_set input;
+struct timeval timeout;
 
 int em506_init(int channel)
 {
@@ -19,6 +21,10 @@ int em506_init(int channel)
 		printf("Cannot open port /dev/ttyO%d\n",channel);
 		return -1;
 	}
+	FD_ZERO(&input);
+	FD_SET(fd,&input);
+	timeout.tv_sec= 0;
+	timeout.tv_usec = 1000;
 	
 	struct termios options;
 	// Get current settings
@@ -40,8 +46,9 @@ int em506_init(int channel)
 	options.c_cflag &= ~CSIZE; //size 8
 	options.c_cflag |= CS8;
 	
-	options.c_lflag &= ~ICANON;
-	options.c_cc[VTIME] = 0;
+	options.c_lflag |= ICANON;
+	// options.c_lflag &= ~ICANON;
+	// options.c_cc[VTIME] = 1;
 	//
 	
 	// Apply settings NOW
@@ -52,6 +59,7 @@ int em506_init(int channel)
 		printf("Cannot setup port /dev/ttyO%d\n",channel);
 		return -1;
 	}
+	//tcflush(fd,TCIFLUSH);
 	return 1;
 }
 
@@ -59,10 +67,26 @@ void em506_read()
 {
 	int res;
 	char buf[255];
-	if ((res = read(fd,buf,255))>0)
+	int rv;
+	
+	rv = select(fd+1,&input,NULL,NULL,&timeout);
+	if(rv==-1)
+		perror("select\n");
+	else if(rv == 0)
+		printf("timeout\n");
+	else
 	{
-		buf[res]=0;
-		printf("%s",buf,res);
-		fflush(stdout);
+		if ((res = read(fd,buf,255))>0)
+		{
+			buf[res]=0;
+			printf("%s",buf,res);
+			fflush(stdout);
+		}
 	}
+}
+
+void em506_cleanup()
+{
+	tcflush(fd,TCIFLUSH);
+	close(fd);	
 }

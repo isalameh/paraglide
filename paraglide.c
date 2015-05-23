@@ -59,7 +59,6 @@ int main()
 	while(get_state()!=EXITING)
 	{
 		usleep(100000);
-		em506_read();
 	}
 	
 	/////////// Exit//////////////////////////////
@@ -67,5 +66,6 @@ int main()
 	setRED(0);
 	cleanup_cape();
 	log_stop();
+	em506_cleanup();
 	return 0;
 }

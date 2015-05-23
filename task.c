@@ -125,7 +125,8 @@ int task_sample_imu()
 			task_led_grn &=log_flag;
 			setGRN(task_led_grn);
 			setRED(task_led_red);
-			task_sample_counter = 0;				
+			task_sample_counter = 0;	
+			em506_read();
 		}
 
 		
