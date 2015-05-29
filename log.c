@@ -19,12 +19,22 @@ int log_write_entry_r(volatile log_entry_r* entry)
 	return 0;
 }
 
+int log_write_entry_g(volatile log_entry_g* entry)
+{
+	#define X(type, fmt, name) fprintf(log_file_g, fmt "," , entry->name);
+    LOG_TABLE_GPS
+	#undef X	
+	fprintf(log_file_g, "\n");
+	return 0;
+}
+
 
 int log_start()
 {
 	char time_str[50];
 	char logfile_path[100];
 	char logfile_path_r[100];
+	char logfile_path_g[100];
     time_t t;
     struct tm *tmp;
 	t = time(NULL);
@@ -53,6 +63,12 @@ int log_start()
 	printf("starting new radio logfile\n");
 	printf("%s\n", logfile_path_r);
 	
+	strcpy (logfile_path_g, LOG_DIRECTORY);
+	strcat (logfile_path_g, time_str);
+	strcat (logfile_path_g, "_gps.csv");
+	printf("starting new gps logfile\n");
+	printf("%s\n", logfile_path_g);
+	
 	log_file = fopen(logfile_path, "w");
 	if (log_file==NULL){
 		printf("could not open logging directory\n");
@@ -66,7 +82,7 @@ int log_start()
 	fflush(log_file);
 	
 	log_file_r = fopen(logfile_path_r,"w");
-	if (log_file==NULL){
+	if (log_file_r==NULL){
 		printf("could not open radio logging directroy\n");
 		return -1;
 	}
@@ -75,6 +91,17 @@ int log_start()
 	#undef X	
 	fprintf(log_file_r, "\n");
 	fflush(log_file_r);
+	
+	log_file_g = fopen(logfile_path_g,"w");
+	if (log_file_g==NULL){
+		printf("could not open gps logging directroy\n");
+		return -1;
+	}
+	#define X(type, fmt, name) fprintf(log_file_g, "%s," , #name);
+    LOG_TABLE_GPS
+	#undef X	
+	fprintf(log_file_g, "\n");
+	fflush(log_file_g);
 	
 	log_flag = 1;
 	return 0;

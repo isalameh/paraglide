@@ -59,6 +59,7 @@ int main()
 	while(get_state()!=EXITING)
 	{
 		usleep(100000);
+		em506_read();
 	}
 	
 	/////////// Exit//////////////////////////////

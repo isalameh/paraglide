@@ -42,21 +42,36 @@
 	X(float,  "%0.2f", Aux2	) \
 	X(float,  "%0.2f", Aux3	) 
 	
-	
+#define LOG_TABLE_GPS \
+    X(int, "%d", year)\
+    X(int,  "%d", mon	) \
+	X(int,  "%d", day	) \
+	X(int,  "%d", hour	) \
+	X(int,  "%d", min	) \
+	X(int,  "%d", sec	) \
+	X(int,  "%d", hsec	) \
+	X(float,  "%f", lat	) \
+	X(float,  "%f", lon	) \
+	X(float,  "%f", elv	) \
+	X(float,  "%f", speed)
 	
 #define X(type, fmt, name) type name ;
 typedef struct log_entry_t { LOG_TABLE } log_entry_t;
 typedef struct log_entry_r { LOG_TABLE_RADIO} log_entry_r;
+typedef struct log_entry_g { LOG_TABLE_GPS} log_entry_g;
 #undef X
 	
 FILE* log_file;
 FILE* log_file_r;
+FILE* log_file_g;
 volatile log_entry_t log_buffer;
 volatile log_entry_r log_buffer_r;
+volatile log_entry_g log_buffer_g;
 volatile int log_flag;
 
 int log_write_entry(volatile log_entry_t* entry);
 int log_write_entry_r(volatile log_entry_r* entry);
+int log_write_entry_g(volatile log_entry_g* entry);
 //void*  log_writer();
 int log_start();
 int log_stop();

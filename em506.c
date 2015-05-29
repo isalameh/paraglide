@@ -9,6 +9,14 @@
 int fd;
 fd_set input;
 struct timeval timeout;
+nmeaPARSER parser;
+
+void print_hex(const char *s)
+{
+  while(*s)
+    printf("%02x", (unsigned int) *s++);
+  printf("\n");
+}
 
 int em506_init(int channel)
 {
@@ -60,7 +68,10 @@ int em506_init(int channel)
 		return -1;
 	}
 	//tcflush(fd,TCIFLUSH);
-	return 1;
+	nmea_zero_INFO(&em506_info);
+    nmea_parser_init(&parser);
+
+	return 0;
 }
 
 void em506_read()
@@ -76,10 +87,15 @@ void em506_read()
 		printf("timeout\n");
 	else
 	{
-		if ((res = read(fd,buf,255))>0)
+		if ((res = read(fd,buf,255))>5)
 		{
-			buf[res]=0;
-			printf("%s",buf,res);
+			buf[res-1]=0x0d;
+			buf[res] = 0x0a;
+			buf[res+1]=0;
+			nmea_parse(&parser, buf, res+1, &em506_info);
+			//printf("%s",buf);
+			//print_hex(buf);
+			printf("lat: %f lon: %f\n", em506_info.lat,em506_info.lon);
 			fflush(stdout);
 		}
 	}
@@ -88,5 +104,6 @@ void em506_read()
 void em506_cleanup()
 {
 	tcflush(fd,TCIFLUSH);
+	nmea_parser_destroy(&parser);
 	close(fd);	
 }

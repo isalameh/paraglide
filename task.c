@@ -12,13 +12,13 @@ volatile long bmp_temp_raw = 0;
 volatile long bmp_press_raw = 0;
 volatile long bmp_temp = 0;
 volatile long bmp_press = 0;
-unsigned long *time_ms;
+unsigned long time_ms;
 int task_sample_imu()
 {
 	mpudata_t mpu; //struct to read IMU data into
 	memset(&mpu, 0, sizeof(mpudata_t)); //make sure it's clean before starting
 	if (mpu9150_read(&mpu) == 0) {
-		linux_get_ms(time_ms);
+		linux_get_ms(&time_ms);
 		// printf("\r");
 		
 		
@@ -115,7 +115,21 @@ int task_sample_imu()
 			// send_servo_pulse_us(9,log_buffer_r.Aux3);
 			
 			if(log_flag!=0)
-				log_write_entry_r(&log_buffer);
+				log_write_entry_r(&log_buffer_r);
+		}
+		
+		{
+			log_buffer_g.year = em506_info.utc.year;
+			log_buffer_g.mon = em506_info.utc.mon;
+			log_buffer_g.day = em506_info.utc.day;
+			log_buffer_g.hour = em506_info.utc.hour;
+			log_buffer_g.min = em506_info.utc.min;
+			log_buffer_g.sec = em506_info.utc.sec;
+			log_buffer_g.hsec = em506_info.utc.hsec;
+			log_buffer_g.lat = em506_info.lat;
+			log_buffer_g.lon = em506_info.lon;
+			log_buffer_g.elv = em506_info.elv;
+			log_buffer_g.speed = em506_info.speed;
 		}
 		
 		if(task_sample_counter%SAMPLE_HZ==0)
@@ -126,7 +140,9 @@ int task_sample_imu()
 			setGRN(task_led_grn);
 			setRED(task_led_red);
 			task_sample_counter = 0;	
-			em506_read();
+			//em506_read();
+			if(log_flag!=0)
+				log_write_entry_g(&log_buffer_g);
 		}
 
 		
@@ -137,4 +153,5 @@ int task_sample_imu()
 int task_pause_unpress()
 {
 	log_flag^=1;
+	return 0;
 }
