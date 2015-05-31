@@ -4,6 +4,7 @@
 #include "task.h"
 #include "bmp180.h"
 #include "em506.h"
+#include "ms4525.h"
 
 int main()
 {
@@ -25,6 +26,7 @@ int main()
 		cleanup_cape();
 		return -1;
 	}
+	printf("DONE!\n");
 	
 	
 	printf("\nInitializing GPS\n");
@@ -34,7 +36,17 @@ int main()
 		cleanup_cape();
 		return -1;
 	}
+	printf("DONE!\n");
 
+	printf("\nInitializing SPEED SENSOR\n");
+	if(ms4525_init()<0)
+	{
+		printf("SPEED SENSOR initialization failed!\n");
+		cleanup_cape();
+		return -1;
+		
+	}
+	
 	if(initialize_dsm2()){
 		// if init returns -1 if there was a problem 
 		// most likely no calibration file found

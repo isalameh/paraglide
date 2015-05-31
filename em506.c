@@ -6,7 +6,7 @@
 #include <errno.h>   /* Error number definitions */
 #include <termios.h> /* POSIX terminal control definitions */
 
-int fd;
+int uart2_fd;
 fd_set input;
 struct timeval timeout;
 nmeaPARSER parser;
@@ -22,23 +22,23 @@ int em506_init(int channel)
 {
 	char portf[32];
 	sprintf(portf, "/dev/ttyO%d", channel);
-	fd = open(portf,O_RDWR | O_NOCTTY | O_NDELAY);
-	if (fd == -1)
+	uart2_fd = open(portf,O_RDWR | O_NOCTTY | O_NDELAY);
+	if (uart2_fd == -1)
 	{
 		perror("Open(UART) ");
 		printf("Cannot open port /dev/ttyO%d\n",channel);
 		return -1;
 	}
 	FD_ZERO(&input);
-	FD_SET(fd,&input);
+	FD_SET(uart2_fd,&input);
 	timeout.tv_sec= 0;
 	timeout.tv_usec = 1000;
 	
 	struct termios options;
 	// Get current settings
-	if (tcgetattr(fd,&options)!=0)
+	if (tcgetattr(uart2_fd,&options)!=0)
 	{
-		close(fd);
+		close(uart2_fd);
 		perror("Setup(UART) ");
 		printf("Cannot get settings port /dev/ttyO%d\n",channel);
 		return -1;
@@ -60,14 +60,14 @@ int em506_init(int channel)
 	//
 	
 	// Apply settings NOW
-	if (tcsetattr(fd, TCSANOW, &options)!=0)
+	if (tcsetattr(uart2_fd, TCSANOW, &options)!=0)
 	{
-		close(fd);
+		close(uart2_fd);
 		perror("Setup(UART)");
 		printf("Cannot setup port /dev/ttyO%d\n",channel);
 		return -1;
 	}
-	//tcflush(fd,TCIFLUSH);
+	//tcflush(uart2_fd,TCIFLUSH);
 	nmea_zero_INFO(&em506_info);
     nmea_parser_init(&parser);
 
@@ -80,14 +80,14 @@ void em506_read()
 	char buf[255];
 	int rv;
 	
-	rv = select(fd+1,&input,NULL,NULL,&timeout);
+	rv = select(uart2_fd+1,&input,NULL,NULL,&timeout);
 	if(rv==-1)
 		perror("select\n");
 	else if(rv == 0)
 		printf("timeout\n");
 	else
 	{
-		if ((res = read(fd,buf,255))>5)
+		if ((res = read(uart2_fd,buf,255))>5)
 		{
 			buf[res-1]=0x0d;
 			buf[res] = 0x0a;
@@ -103,7 +103,7 @@ void em506_read()
 
 void em506_cleanup()
 {
-	tcflush(fd,TCIFLUSH);
+	tcflush(uart2_fd,TCIFLUSH);
 	nmea_parser_destroy(&parser);
-	close(fd);	
+	close(uart2_fd);	
 }
