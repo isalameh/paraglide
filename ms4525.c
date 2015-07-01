@@ -1,3 +1,4 @@
+/*Speed sensor driver. unfinished*/
 #include "ms4525.h"
 #include <errno.h>
 #include <string.h>

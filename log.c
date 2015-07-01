@@ -1,3 +1,4 @@
+/*logging module*/
 #include "log.h"
 #include <robotics_cape.h>
 

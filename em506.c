@@ -1,3 +1,4 @@
+/*gps driver*/
 #include "em506.h"
 #include <stdio.h>   /* Standard input/output definitions */
 #include <string.h>  /* String function definitions */
@@ -11,6 +12,7 @@ fd_set input;
 struct timeval timeout;
 nmeaPARSER parser;
 
+//print hex message for debug reason
 void print_hex(const char *s)
 {
   while(*s)
@@ -18,6 +20,7 @@ void print_hex(const char *s)
   printf("\n");
 }
 
+// open serial port and init pharser
 int em506_init(int channel)
 {
 	char portf[32];
@@ -93,9 +96,9 @@ void em506_read()
 			buf[res] = 0x0a;
 			buf[res+1]=0;
 			nmea_parse(&parser, buf, res+1, &em506_info);
-			//printf("%s",buf);
+			printf("%s",buf);
 			//print_hex(buf);
-			printf("lat: %f lon: %f\n", em506_info.lat,em506_info.lon);
+			//printf("lat: %f lon: %f\n", em506_info.lat,em506_info.lon);
 			fflush(stdout);
 		}
 	}

@@ -1,6 +1,9 @@
+/*logging module*/
 #ifndef LOG_H
 #define LOG_H
 #include <robotics_cape.h>
+
+//imu entry structure
 #define LOG_TABLE \
     X(unsigned long, "%lu", time)\
     X(float,  "%f", roll	) \
@@ -17,19 +20,8 @@
 	X(long, "%li", temperature)\
 	X(long, "%li", pressure)
 
-// #define LOG_TABLE_RADIO \
-    // X(unsigned long, "%lu", time)\
-    // X(int,  "%d", Thr	) \
-	// X(int,  "%d", Roll	) \
-	// X(int,  "%d", Pitch	) \
-	// X(int,  "%d", Yaw	) \
-	// X(int,  "%d", Kill	) \
-	// X(int,  "%d", Mode	) \
-	// X(int,  "%d", Aux1	) \
-	// X(int,  "%d", Aux2	) \
-	// X(int,  "%d", Aux3	) 
-	
-	
+
+// dsm radio entry structure	
 #define LOG_TABLE_RADIO \
     X(unsigned long, "%lu", time)\
     X(float,  "%0.2f", Thr	) \
@@ -42,6 +34,8 @@
 	X(float,  "%0.2f", Aux2	) \
 	X(float,  "%0.2f", Aux3	) 
 	
+	
+// GPS entry structure	
 #define LOG_TABLE_GPS \
     X(int, "%d", year)\
     X(int,  "%d", mon	) \
@@ -60,13 +54,20 @@ typedef struct log_entry_t { LOG_TABLE } log_entry_t;
 typedef struct log_entry_r { LOG_TABLE_RADIO} log_entry_r;
 typedef struct log_entry_g { LOG_TABLE_GPS} log_entry_g;
 #undef X
-	
+
+// imu logging file	
 FILE* log_file;
+// dsm logging file
 FILE* log_file_r;
+// gps logging file
 FILE* log_file_g;
+// imu entry
 volatile log_entry_t log_buffer;
+// dsm entry
 volatile log_entry_r log_buffer_r;
+// gps entry
 volatile log_entry_g log_buffer_g;
+// log enable/disable flag
 volatile int log_flag;
 
 int log_write_entry(volatile log_entry_t* entry);

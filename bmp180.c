@@ -1,7 +1,9 @@
 #include "bmp180.h"
 #include <linux_glue.h>
 
+// control register 
 BMPCtl CtlReg; 
+// calibration parameters
 BMPCalib Calib_param;
 
 unsigned char bmp_get_id()
@@ -40,8 +42,10 @@ int bmp_init()
 		printf("Unidentified device ID!\n");
 		return -1;
 	}
+	// update calibration parameters
 	Calib_param = bmp_get_calib();
 	printf("Valid device ID: %hu\n",tmp);
+	// update device version
 	tmp = bmp_get_ver();
 	printf("Device version: %hu\n",tmp);
 	//CtlReg = bmp_get_ctl_reg();
@@ -89,6 +93,7 @@ long bmp_read_temp()
 long bmp_read_press()
 {
 	long result;
+	// only support non over sampling 
 	if(CtlReg.bit.OSS==0)
 		{
 			unsigned char command = BMP_CTL_PRE0+(CtlReg.bit.OSS<<6);
@@ -100,13 +105,14 @@ long bmp_read_press()
 		}
 	else
 		{
-			/*Oversample*/
+			/*Oversample, refer to datasheet*/
 		}
 	return result;
 }
 
 long bmp_calc_temp(long data)
 {
+	// formular refer to datasheet
 	long result = 0;
 	long x1, x2 = 0;
 	x1 = (( data -	(long) Calib_param.ac6) * (long) Calib_param.ac5)>> 15;
@@ -120,6 +126,7 @@ long bmp_calc_temp(long data)
 
 long bmp_calc_press(long data)
 {
+	// formular refer to datasheet
 	long result = 0;
 	long x1,x2,x3,b3,b6 = 0;
 	unsigned long b4,b7 = 0;

@@ -1,14 +1,19 @@
+/*BMP180 driver*/
 #ifndef BMP180_H
 #define BMP180_H
 
 #include <linux/types.h>
 
+// slave address
 #define BMP_DEVICE_ADDR (0x77)
+// default device ID
 #define BMP_DEVICE_ID	(0x55)
+// reset chip cmd
 #define BMP_RESET		(0xB6)
-
+// calibration data size 
 #define BMP_CALIB_DATA_SIZE			(22)
 
+// fixed time required for conversion 
 #define BMP_TEMP_CONVERSION_TIME	(5)
 #define BMP_2MS_DELAY_U8X			(2)
 #define BMP_3MS_DELAY_U8X			(3)
@@ -64,11 +69,13 @@ typedef struct{
 	unsigned OSS:2;	
 }BMPCtlRegs;
 
+// BMP control register 
 typedef union{
 	BMPCtlRegs bit;
 	unsigned short all;
 }BMPCtl;
 
+// calibration data structure
 typedef struct{
 	short 			ac1;
 	short 			ac2;
@@ -84,15 +91,24 @@ typedef struct{
 	int				b5;
 }BMPCalib;
 
+// get device id
 unsigned char bmp_get_id();
+// get device version
 unsigned char bmp_get_ver();
+// get control register value
 BMPCtl bmp_get_ctl_reg();
+// reset chip
 void bmp_reset();
+// get calibration data
 BMPCalib bmp_get_calib();
+// initialize chip
 int bmp_init();
+// read raw temperature
 long bmp_read_temp();
+// read raw pressure
 long bmp_read_press();
-
+// calculate engineer unit temperature
 long bmp_calc_temp(long data);
+// calculate engineer unit pressure
 long bmp_calc_press(long data);
 #endif /*BMP180_H*/
